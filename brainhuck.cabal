@@ -1,0 +1,32 @@
+name:                brainhuck
+version:             0.1.0.0
+synopsis:            A small Brainfuck interpreter
+description:         Please see README.md
+homepage:            http://github.com/flannelhead/brainhuck#readme
+license:             MIT
+license-file:        LICENSE
+author:              Sakari Kapanen
+maintainer:          sakari.m.kapanen@gmail.com
+copyright:           2015 Sakari Kapanen
+category:            Programming languages
+build-type:          Simple
+-- extra-source-files:
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      src
+  exposed-modules:     SimpleParser
+  build-depends:       base >= 4.7 && < 5
+  default-language:    Haskell2010
+
+executable brainhuck
+  hs-source-dirs:      app
+  main-is:             Main.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  build-depends:       base
+                     , brainhuck
+  default-language:    Haskell2010
+
+source-repository head
+  type:     git
+  location: https://github.com/flannelhead/brainhuck
