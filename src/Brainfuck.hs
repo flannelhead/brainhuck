@@ -1,7 +1,7 @@
 module Brainfuck where
 
-import Data.Monoid
-
+--import Text.Parsec
+--import Text.Parsec.String
 import SimpleParser
 
 -- data Brainfuck next = IncDataPtr next
@@ -16,27 +16,20 @@ data Brainfuck = IncPtr
                | DecByte
                | ByteOut
                | ByteIn
-               | LoopStart
-               | LoopEnd
+               | Loop [Brainfuck]
                deriving Show
 
 type Program = [Brainfuck]
 
 helloWorld :: String
-helloWorld = "a++++++  ++[>++++[>++>def  +++>+++>+<<<<-]>+>+>-g hi>>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++."
-
-symbols :: String
-symbols = "><+-.,[]"
+helloWorld = "a++++  ++++[>++++[>++>def  +++>+++>+<<<<-]>+>+>-g hi>>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.a"
 
 brainfuck :: Parser Program
-brainfuck = pure (:) <*> (skipMany (noneOf symbols) *> chrToken chrToBf)
-                     <*> (eof *> pure []) <> brainfuck where
-    chrToBf '>' = Just IncPtr
-    chrToBf '<' = Just DecPtr
-    chrToBf '+' = Just IncByte
-    chrToBf '-' = Just DecByte
-    chrToBf '.' = Just ByteOut
-    chrToBf ',' = Just ByteIn
-    chrToBf '[' = Just LoopStart
-    chrToBf ']' = Just LoopEnd
-    chrToBf _   = Nothing
+brainfuck = skip *> parseBf
+    where parseBf = (:) <$> ((bfSymbol <|> loop) <* skip)
+                        <*> (parseBf <|> pure [])
+          loop = Loop <$> between (char '[') (char ']') brainfuck
+          bfSymbol = foldl1 (<|>) $ map (\(c, f) -> char c *> pure f)
+              [('>', IncPtr), ('<', DecPtr), ('+', IncByte), ('-', DecByte),
+               ('.', ByteOut), (',', ByteIn)]
+          skip = skipMany (noneOf "><+-.,[]")

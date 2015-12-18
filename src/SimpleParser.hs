@@ -35,11 +35,13 @@ satisfy :: (Char -> Bool) -> Parser Char
 satisfy f = Parser $ \s -> case s of (c:cs) -> if f c then Just (c, cs)
                                                       else Nothing
                                      _      -> Nothing
-chrToken :: (Char -> Maybe a) -> Parser a
-chrToken matchTkn = Parser $ \s -> case s of (c:cs) -> (\tkn -> (tkn, cs))
-                                                 <$> matchTkn c
-                                             _      -> Nothing
 
-eof :: Parser ()
-eof = Parser $ \s -> case s of "" -> Just ((), s)
-                               _  -> Nothing
+char :: Char -> Parser Char
+char c = satisfy (== c)
+
+between :: Parser a -> Parser a -> Parser b -> Parser b
+between open close p = open *> p <* close
+
+(<|>) :: Monoid m => m -> m -> m
+(<|>) = mappend
+infixr 1 <|>
