@@ -24,12 +24,16 @@ type Program = [Brainfuck]
 helloWorld :: String
 helloWorld = "a++++  ++++[>++++[>++>def  +++>+++>+<<<<-]>+>+>-g hi>>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.a"
 
+simplePrgm :: String
+simplePrgm = ",."
+
 brainfuck :: Parser Program
 brainfuck = skip *> parseBf
-    where parseBf = (:) <$> ((bfSymbol <|> loop) <* skip)
+    where parseBf = (:) <$> ((cmd <|> loop) <* skip)
                         <*> (parseBf <|> pure [])
           loop = Loop <$> between (char '[') (char ']') brainfuck
-          bfSymbol = foldl1 (<|>) $ map (\(c, f) -> char c *> pure f)
-              [('>', IncPtr), ('<', DecPtr), ('+', IncByte), ('-', DecByte),
-               ('.', ByteOut), (',', ByteIn)]
+          cmd = foldl1 (<|>) $ map (\(c, f) -> f <$ char c) [
+              ('>', IncPtr),  ('<', DecPtr),
+              ('+', IncByte), ('-', DecByte),
+              ('.', ByteOut), (',', ByteIn) ]
           skip = skipMany (noneOf "><+-.,[]")
