@@ -9,4 +9,4 @@ main = do
     argv <- getArgs
     case argv of
       [s] -> readFile s >>= parseAndRun
-      _   -> putStrLn "Usage: brainhuck <filename>"
+      _   -> putStrLn "Usage: brainhug <filename>"
