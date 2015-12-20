@@ -10,12 +10,12 @@ import System.IO
 -- This code works with either my own parser and free implementations or the
 -- premade ones.
 
-import Text.Parsec
-import Text.Parsec.String
-import Control.Monad.Free
+--import Text.Parsec
+--import Text.Parsec.String
+--import Control.Monad.Free
 
---import SimpleParser
---import Free
+import SimpleParser
+import Free
 
 type Program = Free Brainfuck ()
 
