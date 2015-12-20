@@ -43,6 +43,24 @@ byteIn = liftF (ByteIn ())
 loop :: Program -> Program
 loop body = liftF (Loop body ())
 
+-- A simple example of a Brainfuck program:
+-- ask the user for two characters, increment them by one and print them out
+-- in reverse order
+simpleExample :: Program
+simpleExample = do
+    byteIn
+    incByte
+    incPtr
+    byteIn
+    incByte
+    byteOut
+    decPtr
+    byteOut
+
+-- The same program as a string
+simpleExampleStr :: String
+simpleExampleStr = ",+>,+.<."
+
 brainfuck :: Parser Program
 brainfuck = skip *> parseBf
     where parseBf = (>>) <$> ((cmd <|> lp) <* skip)
@@ -56,9 +74,9 @@ brainfuck = skip *> parseBf
 
 runBrainfuck :: Program -> (Int, Int, V.Vector Int) -> IO ()
 runBrainfuck (Free (ByteOut next)) st@(_, ptr, mem) =
-    putChar (chr (mem V.! ptr)) >> hFlush stdout >> runBrainfuck next st
-runBrainfuck (Free (ByteIn next)) (n, ptr, mem) = getChar
-    >>= \c -> runBrainfuck next (n, ptr, mem V.// [(ptr, ord c)])
+    putChar (chr $ mem V.! ptr) >> hFlush stdout >> runBrainfuck next st
+runBrainfuck (Free (ByteIn next)) (n, ptr, mem) =
+    getChar >>= \c -> runBrainfuck next (n, ptr, mem V.// [(ptr, ord c)])
 runBrainfuck (Free (IncPtr next)) (n, ptr, mem) = runBrainfuck next
     (n, min (n-1) (ptr+1), mem)
 runBrainfuck (Free (DecPtr next)) (n, ptr, mem) = runBrainfuck next
