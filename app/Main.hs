@@ -1,6 +1,12 @@
 module Main where
 
-import SimpleParser
+import System.Environment
+
+import Brainfuck
 
 main :: IO ()
-main = putStrLn "Hello Brainhuck!"
+main = do
+    argv <- getArgs
+    case argv of
+      [s] -> readFile s >>= parseAndRun
+      _   -> putStrLn "Usage: brainhuck <filename>"

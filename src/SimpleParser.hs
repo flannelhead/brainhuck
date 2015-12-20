@@ -45,3 +45,8 @@ between open close p = open *> p <* close
 (<|>) :: Monoid m => m -> m -> m
 (<|>) = mappend
 infixr 1 <|>
+
+parse :: Parser a -> String -> String -> Either String a
+parse p _ str = case runParser p str of
+                  Nothing     -> Left "Parse error"
+                  Just (x, _) -> Right x
